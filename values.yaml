@@ -1,0 +1,35 @@
+nodepool:
+  name: default
+  arch:
+    - amd64
+  capacityType:
+    - on-demand
+  instanceCategories: []
+  limits:
+    cpu: "1000"
+    memory: 1000Gi
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 1m
+
+ec2nodeclass:
+  name: default
+  amiFamily: AL2023
+  role: KarpenterNodeRole
+  subnetIds:
+    - subnet-abc123
+  securityGroupId: sg-xyz789
+  amiSelectorTerms: []
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: 2
+    httpTokens: required
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 50Gi
+        volumeType: gp3
+        deleteOnTermination: true
+        encrypted: true
+  tags: {}

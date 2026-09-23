@@ -1,0 +1,34 @@
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: {{ .Values.ec2nodeclass.name }}
+  labels:
+    {{- include "karpenter-chart.labels" . | nindent 4 }}
+    {{- if .Values.nodepool.labels }}
+    {{- toYaml .Values.nodepool.labels | nindent 4 }}
+    {{- end }}
+spec:
+  amiFamily: {{ .Values.ec2nodeclass.amiFamily }}
+  role: {{ required "ec2nodeclass.role is required" .Values.ec2nodeclass.role }}
+  subnetSelectorTerms:
+    {{- range .Values.ec2nodeclass.subnetIds }}
+    - id: {{ . }}
+    {{- end }}
+  securityGroupSelectorTerms:
+    - id: {{ .Values.ec2nodeclass.securityGroupId }}
+  {{- if .Values.ec2nodeclass.amiSelectorTerms }}
+  amiSelectorTerms:
+    {{- toYaml .Values.ec2nodeclass.amiSelectorTerms | nindent 4 }}
+  {{- end }}
+  {{- if .Values.ec2nodeclass.metadataOptions }}
+  metadataOptions:
+    {{- toYaml .Values.ec2nodeclass.metadataOptions | nindent 4 }}
+  {{- end }}
+  {{- if .Values.ec2nodeclass.blockDeviceMappings }}
+  blockDeviceMappings:
+    {{- toYaml .Values.ec2nodeclass.blockDeviceMappings | nindent 4 }}
+  {{- end }}
+  {{- if .Values.ec2nodeclass.tags }}
+  tags:
+    {{- toYaml .Values.ec2nodeclass.tags | nindent 4 }}
+  {{- end }}
