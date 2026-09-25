@@ -1,25 +1,31 @@
+{{- $subnetIDs := required "ec2nodeclass.subnetIds is required" .Values.ec2nodeclass.subnetIds }}
+{{- if not $subnetIDs }}
+{{- fail "ec2nodeclass.subnetIds must contain at least one subnet ID" }}
+{{- end }}
+{{- $amiSelectorTerms := required "ec2nodeclass.amiSelectorTerms is required" .Values.ec2nodeclass.amiSelectorTerms }}
+{{- if not $amiSelectorTerms }}
+{{- fail "ec2nodeclass.amiSelectorTerms must contain at least one selector term" }}
+{{- end }}
 apiVersion: karpenter.k8s.aws/v1
 kind: EC2NodeClass
 metadata:
-  name: {{ .Values.ec2nodeclass.name }}
+  name: {{ required "ec2nodeclass.name is required" .Values.ec2nodeclass.name }}
   labels:
     {{- include "karpenter-chart.labels" . | nindent 4 }}
-    {{- if .Values.nodepool.labels }}
-    {{- toYaml .Values.nodepool.labels | nindent 4 }}
+    {{- if .Values.ec2nodeclass.labels }}
+    {{- toYaml .Values.ec2nodeclass.labels | nindent 4 }}
     {{- end }}
 spec:
   amiFamily: {{ .Values.ec2nodeclass.amiFamily }}
   role: {{ required "ec2nodeclass.role is required" .Values.ec2nodeclass.role }}
   subnetSelectorTerms:
-    {{- range .Values.ec2nodeclass.subnetIds }}
+    {{- range $subnetIDs }}
     - id: {{ . }}
     {{- end }}
   securityGroupSelectorTerms:
-    - id: {{ .Values.ec2nodeclass.securityGroupId }}
-  {{- if .Values.ec2nodeclass.amiSelectorTerms }}
+    - id: {{ required "ec2nodeclass.securityGroupId is required" .Values.ec2nodeclass.securityGroupId }}
   amiSelectorTerms:
-    {{- toYaml .Values.ec2nodeclass.amiSelectorTerms | nindent 4 }}
-  {{- end }}
+    {{- toYaml $amiSelectorTerms | nindent 4 }}
   {{- if .Values.ec2nodeclass.metadataOptions }}
   metadataOptions:
     {{- toYaml .Values.ec2nodeclass.metadataOptions | nindent 4 }}

@@ -2,7 +2,7 @@
 
 ![Version: 1.3.2](https://img.shields.io/badge/Version-1.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.2](https://img.shields.io/badge/AppVersion-1.3.2-informational?style=flat-square)
 
-A Helm chart for Karpenter Custom Resource Definitions (CRDs).
+A Helm chart that deploys Karpenter `NodePool` and `EC2NodeClass` resources.
 
 **Homepage:** <https://karpenter.sh/>
 
@@ -28,7 +28,22 @@ registries.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| additionalAnnotations | object | `{}` | Additional annotations for the custom resource definitions. |
+| nodepool.name | string | `"default"` | Name of the NodePool resource. |
+| nodepool.labels | object | `{}` | Additional labels for the NodePool resource. |
+| nodepool.arch | list | `["amd64"]` | Architectures accepted by the NodePool. |
+| nodepool.capacityType | list | `["on-demand"]` | Karpenter capacity types accepted by the NodePool. |
+| nodepool.instanceCategories | list | `[]` | Optional EC2 instance categories accepted by the NodePool. |
+| nodepool.limits | object | `{"cpu":"1000","memory":"1000Gi"}` | Resource limits for the NodePool. |
+| nodepool.disruption | object | See `values.yaml` | NodePool disruption configuration. |
+| ec2nodeclass.name | string | `"default"` | Name of the EC2NodeClass resource. |
+| ec2nodeclass.labels | object | `{}` | Additional labels for the EC2NodeClass resource. |
+| ec2nodeclass.role | string | `"KarpenterNodeRole"` | IAM role used by nodes. |
+| ec2nodeclass.subnetIds | list | `["subnet-abc123"]` | Subnet IDs used to create required subnet selector terms. |
+| ec2nodeclass.securityGroupId | string | `"sg-xyz789"` | Security group ID used to create the required security-group selector term. |
+| ec2nodeclass.amiSelectorTerms | list | `[{"alias":"al2023@latest"}]` | AMI selector terms. At least one selector term is required by the CRD. |
+| ec2nodeclass.metadataOptions | object | See `values.yaml` | EC2 instance metadata options. |
+| ec2nodeclass.blockDeviceMappings | list | See `values.yaml` | Optional block-device mappings. |
+| ec2nodeclass.tags | object | `{}` | Tags applied to launched EC2 instances. |
 
 ----------------------------------------------
 

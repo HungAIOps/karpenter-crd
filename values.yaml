@@ -1,5 +1,6 @@
 nodepool:
   name: default
+  labels: {}
   arch:
     - amd64
   capacityType:
@@ -14,12 +15,14 @@ nodepool:
 
 ec2nodeclass:
   name: default
+  labels: {}
   amiFamily: AL2023
   role: KarpenterNodeRole
   subnetIds:
     - subnet-abc123
   securityGroupId: sg-xyz789
-  amiSelectorTerms: []
+  amiSelectorTerms:
+    - alias: al2023@latest
   metadataOptions:
     httpEndpoint: enabled
     httpProtocolIPv6: disabled

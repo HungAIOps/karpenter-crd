@@ -1,7 +1,15 @@
+{{- $arch := required "nodepool.arch is required" .Values.nodepool.arch }}
+{{- if not $arch }}
+{{- fail "nodepool.arch must contain at least one architecture" }}
+{{- end }}
+{{- $capacityType := required "nodepool.capacityType is required" .Values.nodepool.capacityType }}
+{{- if not $capacityType }}
+{{- fail "nodepool.capacityType must contain at least one capacity type" }}
+{{- end }}
 apiVersion: karpenter.sh/v1
 kind: NodePool
 metadata:
-  name: {{ .Values.nodepool.name }}
+  name: {{ required "nodepool.name is required" .Values.nodepool.name }}
   labels:
     {{- include "karpenter-chart.labels" . | nindent 4 }}
     {{- if .Values.nodepool.labels }}
@@ -13,12 +21,12 @@ spec:
       nodeClassRef:
         group: karpenter.k8s.aws
         kind: EC2NodeClass
-        name: {{ .Values.ec2nodeclass.name }}
+        name: {{ required "ec2nodeclass.name is required" .Values.ec2nodeclass.name }}
       requirements:
         - key: kubernetes.io/arch
           operator: In
           values:
-            {{- toYaml .Values.nodepool.arch | nindent 12 }}
+            {{- toYaml $arch | nindent 12 }}
         - key: kubernetes.io/os
           operator: In
           values:
@@ -26,7 +34,7 @@ spec:
         - key: karpenter.sh/capacity-type
           operator: In
           values:
-            {{- toYaml .Values.nodepool.capacityType | nindent 12 }}
+            {{- toYaml $capacityType | nindent 12 }}
         {{- if .Values.nodepool.instanceCategories }}
         - key: karpenter.k8s.aws/instance-category
           operator: In
